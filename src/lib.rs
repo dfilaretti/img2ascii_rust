@@ -2,6 +2,12 @@
 //!
 //! `img2ascii` is a collection of utilities to make performing certain
 //! calculations more convenient.
+//! 
+//! TODO: which methods to solve the "squashed ASCII art problem" to use? 
+//! - tweak the image size when resizing
+//! - duplicate each font in the ASCII art 
+//! 
+//! Actually, why not implementing both and giving user a choice? 
 
 use image::imageops::{resize, FilterType};
 use std::error::Error;
@@ -38,7 +44,7 @@ fn lumi_8_to_char(lumi: u8) -> char {
 fn shrink_image(img: image::GrayImage, block_size: u32) -> image::GrayImage {
     let (width, height) = img.dimensions();
     let (new_width, new_height) = (width / block_size, height / block_size);
-    let downsampled_img = resize(&img, new_width, new_height, FilterType::Lanczos3);
+    let downsampled_img = resize(&img, new_width * 2, new_height, FilterType::Lanczos3);
     downsampled_img
 }
 
@@ -47,12 +53,18 @@ fn img_to_ascii(img: image::GrayImage) -> String {
     img.enumerate_rows()
         // map each row to a string of ASCII characters (terminating with a newline)
         .map(|(_, row)| {
-            row.map(|(_, _, lumi)| lumi_8_to_char(lumi.0[0]))
+            row.map(|(_, _, lumi)| repeat_char(lumi_8_to_char(lumi.0[0]), 1))
                 .collect::<String>()
                 + "\n"
         })
         // collect all the rows into a single string
         .collect::<String>()
+}
+
+/// Repeat a character `c` `times` times
+/// TODO: this certainly could be generic; also it's probably doable inline with built-in functions
+pub fn repeat_char(c: char, times: usize) -> String {
+    std::iter::repeat(c).take(times).collect()
 }
 
 /// Run the application

@@ -1,5 +1,19 @@
 use std::{env, process};
 use img2ascii::Config;
+use clap::Parser;
+
+/// Simple program convert an image to ASCII art
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Image file to convert
+    #[arg(short, long)]
+    file: String,
+
+    /// Squeeze
+    #[arg(short, long, default_value_t = 2)]
+    squeeze: u8,
+}
 
 fn main() {
     // accept a filename as an argument (the only argument, actually)
