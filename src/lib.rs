@@ -2,31 +2,28 @@
 //!
 //! `img2ascii` is a collection of utilities to make performing certain
 //! calculations more convenient.
-//! 
-//! TODO: which methods to solve the "squashed ASCII art problem" to use? 
+//!
+//! TODO: which methods to solve the "squashed ASCII art problem" to use?
 //! - tweak the image size when resizing
-//! - duplicate each font in the ASCII art 
-//! 
-//! Actually, why not implementing both and giving user a choice? 
+//! - duplicate each font in the ASCII art
+//!
+//! Actually, why not implementing both and giving user a choice?
 
+use clap::Parser;
 use image::imageops::{resize, FilterType};
 use std::error::Error;
 
-/// Configuration for the application
+/// Simple program convert an image to ASCII art
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
 pub struct Config {
-    file_path: String,
-}
+    /// Image file to convert
+    #[arg(short, long)]
+    input_file: String,
 
-impl Config {
-    /// Build a configuration from command line arguments
-    pub fn build(args: &Vec<String>) -> Result<Config, &'static str> {
-        if args.len() < 2 {
-            return Err("not enough arguments");
-        }
-
-        let file_path = args[1].clone();
-        Ok(Config { file_path })
-    }
+    /// Squeeze
+    #[arg(short, long, default_value_t = 2)]
+    squeeze: u8,
 }
 
 /// Convert a luminance value to a character
@@ -70,7 +67,7 @@ pub fn repeat_char(c: char, times: usize) -> String {
 /// Run the application
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // load image and convert to grey scale
-    let img = image::open(config.file_path)?.into_luma8();
+    let img = image::open(config.input_file)?.into_luma8();
     println!("Original image dimensions: {:?}", img.dimensions());
 
     // get a smaller image (downsample)
