@@ -38,10 +38,10 @@ fn lumi_8_to_char(lumi: u8) -> char {
 
 /// Downsample an image by a factor of `block_size`
 /// TODO: this doesn't necessarily have to operate on `GreyImage` types; it could be more general (e.g. `DynamicImage`)
-fn shrink_image(img: image::GrayImage, block_size: u32) -> image::GrayImage {
+fn shrink_image(img: image::GrayImage, block_size: u32, squeeze: u8) -> image::GrayImage {
     let (width, height) = img.dimensions();
     let (new_width, new_height) = (width / block_size, height / block_size);
-    let downsampled_img = resize(&img, new_width * 2, new_height, FilterType::Lanczos3);
+    let downsampled_img = resize(&img, new_width * squeeze as u32, new_height, FilterType::Lanczos3);
     downsampled_img
 }
 
@@ -72,7 +72,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     // get a smaller image (downsample)
     let block_size = 16;
-    let img_smaller = shrink_image(img, block_size);
+    let img_smaller = shrink_image(img, block_size, config.squeeze);
 
     println!("Reduced image size by a factor of {}x", block_size);
     println!(
