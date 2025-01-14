@@ -27,6 +27,7 @@ pub struct Config {
 }
 
 /// Convert a luminance value to a character
+// TODO: why only using those 4 ASCII chars?
 fn lumi_8_to_char(lumi: u8) -> char {
     match lumi {
         0..=63 => ' ',
@@ -41,8 +42,13 @@ fn lumi_8_to_char(lumi: u8) -> char {
 fn shrink_image(img: image::GrayImage, block_size: u32, squeeze: u8) -> image::GrayImage {
     let (width, height) = img.dimensions();
     let (new_width, new_height) = (width / block_size, height / block_size);
-    let downsampled_img = resize(&img, new_width * squeeze as u32, new_height, FilterType::Lanczos3);
-    downsampled_img
+
+    resize(
+        &img,
+        new_width * squeeze as u32,
+        new_height,
+        FilterType::Lanczos3,
+    )
 }
 
 /// Convert an image to ASCII art
@@ -68,10 +74,13 @@ pub fn repeat_char(c: char, times: usize) -> String {
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // load image and convert to grey scale
     let img = image::open(config.input_file)?.into_luma8();
+
+    // TODO: avoid printing this stuff (or maybe only print if a --verbose flag is set)
     println!("Original image dimensions: {:?}", img.dimensions());
 
     // get a smaller image (downsample)
-    let block_size = 16;
+    // TODO: the block_size should not be fixed, but based on the image size (and the desired output size)
+    let block_size = 32;
     let img_smaller = shrink_image(img, block_size, config.squeeze);
 
     println!("Reduced image size by a factor of {}x", block_size);
@@ -81,8 +90,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     );
 
     // generate and print ASCII art
-    let ascii_img = img_to_ascii(img_smaller);
-    println!("{}", ascii_img);
+    println!("{}", img_to_ascii(img_smaller));
 
     Ok(())
 }
