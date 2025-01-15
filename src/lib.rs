@@ -51,6 +51,7 @@ fn shrink_image<T: GenericImageView>(
 where
     <T as GenericImageView>::Pixel: 'static,
 {
+    // TODO: check the number types here. Can we avoid all this conversions? 
     let ratio = img.dimensions().0 as f32 / (config.width_char / config.squeeze as u16) as f32;
     let new_width = (img.dimensions().0 as f32 / ratio) as u32;
     let new_height = (img.dimensions().1 as f32 / ratio) as u32;
