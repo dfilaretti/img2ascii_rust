@@ -2,15 +2,11 @@
 
 ## Basic usage 
 
-Say hello to Mario: 
+<img src="imgs/mario.jpg" width="400">
 
-![alt text](imgs/mario.jpg)
-
-Here's how to turn it into ASCII art: 
 
 ```
 cargo run -- -i imgs/mario.jpg 
-
 ```
 
 Which gives us the output:
@@ -74,3 +70,157 @@ ooooo.                          .@@@@.           .          ......  ..ooo.oooooo
                                          ....  ........oooooo@ooo@ooooooo....@oo
 
 ```
+
+## More options 
+
+### Setting the desired ASCII art width (in characters) 
+
+If not provided, we'll use a default value. 
+
+```
+cargo run -- -i imgs/mario.jpg -w 50
+```
+
+```
+@@@@@@o@@@@@@@@o@@@@@@@@@@@@@@o@@@o@@@@@oooo@@@@o@
+@@oo@ooo@oooo@o.@@@@@@@@@@@@@oo@@o@@@@@ooooo@@ooo@
+@@oo@ooooooo@o.o@@@@@@@@@@@@@@o.  o@o@oooo@@@oo@o@
+@@oo@oooooo@oo.@@@@@@@@@@@@@@o     oo@o@ooo@@o@@oo
+@@@@ooo@@@@oo.o@@@@@@@o@@o@@o  ... .@@@oooo@oo@@oo
+@@@@oo..ooooooo@@@o@@@o@@@@o   ... .@@ooooooo@oooo
+@@@@@@.    ..o@@@@o@o.oo...     .  .@oo@ooooooo@@o
+@@@@@@o...   ......       ..       .@ooo.ooooo@ooo
+@@@@ooo. ...        .o.             ooo.oooooooooo
+@@@o.     .    .    .oo             .oo.o...oooooo
+ooo.                o@@.      .      ....  .oooooo
+ ..                 o@@o.                  .oooooo
+          .   .. .. @@@@@o....             .oooooo
+         ..       .o@@@@@oo@@@o.           .oooooo
+         ..      .@@oooo...ooooo.          ..ooooo
+        ...     .o@@o... .ooooooo....       ..oooo
+         oo     o@@@oo. ......o......        ...oo
+        .@@o  ....oo.... ...........          ..oo
+        o@@@@o......................           ..o
+        o@@@@@@oooo.................          ...o
+        o@@@@@@@oooo.................         ...o
+      .o@@@@@@@ooooooooo.............         ...o
+     .o@@@@@@@oooooooooooo...........         ...o
+      .o@@@@@@oooooooooooooo........           ...
+       .o@@@@@@ooooooooooooooooo...           ....
+        .o@@@@@@oooooooooooooooo..          ......
+         o@@@@@@@o..o.ooooooo..              .....
+        o@@@@@@@@o. ..........                ....
+        @@o@@@@o@oo.   ......           ... . ....
+         o@@@@@@oooo  ...o..   .... ..............
+          o@@@o@oooo ....oo...ooooooooooooo.......
+           ...oo...  ........oooooooooooooo.oo...o
+                      .........ooooooooooooo.oo.oo
+                        ........ooooooo@oooooooooo
+                         ... .....oooooo@ooooo..oo
+```
+
+### Setting the horizontal squeeze factor 
+
+This defaults to 2 and should work fine most of the times.
+
+
+```
+cargo run -- -i imgs/mario.jpg -w 40 -s 1
+```
+
+```
+@@@@@@@@@@@@o@@@@@@@@@@@o@@@@@@@@oo@@@o@
+@@o@oo@@@o@@o@@@@@@@@@@@o@@o@@@@ooo@@@o@
+@@o@oooooo@oo@@@@@@@@@@oo@oo@@@@o.o@@oo@
+@@o@oooooo@.o@@@@@@@@@@@o. o@@@ooo@@@o@@
+@oooooooo@o.o@@@@@@@@@@@.  .@@ooooo@o@@o
+@o.oooooo@o.@@@@@@@@@@@o    oo@@oo@@o@@o
+@ooooo@@@ooo@@@@@@@@@@@. .. o@@ooo@oo@@o
+o@@oo@@@@o.o@@@@@@@@o@o  .. o@@ooo@oo@oo
+@@@@@.o@oo.o@@@@@oo@o@.  .. .@oooo@o@ooo
+@@@oo  ..oo@@@o@@o@@o.   .. .@oooooooooo
+@@@@o.   .o@@@o@o.o..     . .@oooooooo@o
+@@@@@. .  .o@oo.     .    . .@oooooo@@oo
+oo@ooo...           ..       ooo.ooooooo
+@@@ooo...   ..  .o           oo.oooooooo
+@@@o.  ..   .   .o.          oooo..ooooo
+o@o.            .@.          oo.. .ooooo
+oo.             o@o     .     ... .ooooo
+.o.             o@o     .     ... .ooooo
+ ..             o@@.   .          .ooooo
+        .  .  . @@@o.             .ooooo
+.       .  .....@@@@oo.o.          .oooo
+       ..      o@@@@o@@@o.        .ooooo
+       ..     .@@@@ooooooo        .ooooo
+        .    .o@ooo..ooooo.        .oooo
+       ..    .@@o.. .ooooo...      ..ooo
+       ..    .@@o.  .ooooooo.. .    ..oo
+       oo    o@@oo. ....o....   .   ..oo
+       o@   .oooo.. .........        .oo
+       @@o... .o.............        ..o
+      .@@@o..................         .o
+      .@@@@oooo..............        ..o
+      .@@@@@oo...............        ..o
+      .@@@@@@ooo.............        ...
+      o@@@@@oooooo............       ..o
+     .@@@@@@ooooooo...........       ..o
+     o@@@@@@oooooooo..........       ...
+    .o@@@@@oooooooooo........        ...
+     o@@@@@oooooooooooo......         ..
+     .o@@@@@ooooo.ooooooo....        ...
+      .@@@@@oooooooooooooo..        ....
+      .o@@@@ooooooooooooo..         ....
+       o@@@@@o.ooooooooo..          ....
+       o@@@@@o....ooooo..           ....
+      .@@@@@@o..........            ....
+      o@@@@@@@o.  ......             ...
+      o@o@@@@@o.   ....         ........
+      .oo@@@oooo  .....        .........
+       .@@@@@ooo  ..o.. ........oo......
+        @@@o@ooo ...o.....ooooooooo.....
+        o@oo@oo. ...o..ooooooooooo.o...o
+         ..oo..  .......ooooooooooo.o..o
+                 .......ooooooooooo.o..o
+                  ...o...oooooo@ooo.oooo
+                   ..o....ooooo@oooooooo
+                    ......oooooo@oooo.oo
+                    ..  ...ooooo@ooo..oo
+```
+
+or also 
+
+```
+cargo run -- -i imgs/mario.jpg -w 60 -s 3
+```
+
+```
+@@@o@@@o@@@@@@@@@@o@@@@@@@@@@@@@@@@oo@@@@@@@@@@@oo.oo@@@@oo@
+@@@oo@ooooooooo@@o.@@@@@@@@@@@@@@@@oooo..@@@@@@ooooo@@@oo@o@
+@@o.o@oooooooo@oo.o@@@@@@@@@@@@@@@@o.    .@o@ooooo@o@@oo@@oo
+@@@@oooo@@@@@@oo.o@@@@@@@@o@@@@@@@o   ... .@@@@oooo@@oo@@ooo
+@@@@@oo....oooooo@@@@@@@@@o@@@ooo.   .... .@@oooooo@oo@ooooo
+@@@@@@@o      ..o@@@oooo........          .@oooo.ooooooo@ooo
+@@@@@oooo.....    ..     ..                .ooo..oooooo@oooo
+@@@@o..    ...    .     .o@.               .ooo.o...oooooooo
+.oo.                    o@@@.       .        ....  ..ooooooo
+  ..        .    ..  .  o@@@@o                     ..ooooooo
+           ...      ...o@@@@@@oooooo..              .ooooooo
+           ..        .@@@oooo...ooooooo.            ..oooooo
+          ....     .o@@@o...  ..ooooooo.....         ..ooooo
+          .o@.    ..oooooo.. ...............           ..ooo
+          o@@@oo...........................             ..oo
+         .@@@@@@@ooooo......................           ...oo
+         .@@@@@@@@@oooooo.o.................            ...o
+       .o@@@@@@@@oooooooooooo................          ....o
+      ..o@@@@@@@@oooooooooooooo.o...........            ....
+        .o@@@@@@@@oooooooooooooooooooo....             .....
+          .o@@@@@@@oo.ooooooooooooooo...             ......o
+          .o@@@@@@@@o.........ooo....                 ......
+         .@@@@@@@@@@ooo.    .......               .    .....
+          .oo@@@@@@@oooo   .......   ..... .................
+            o@@@oo@oooo. .....oo....oooooooooooooooo........
+                 ...      ....... ..oooooooooooooooo..oo..oo
+                            ....o.....oooooooo@ooooooooooooo
+```
+
+
