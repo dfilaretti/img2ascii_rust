@@ -24,6 +24,10 @@ pub struct Config {
     #[arg(short, long)]
     input_file: String,
 
+    /// Expected width of the output ASCII art (in characters)
+    #[arg(short, long, default_value_t = 80)]
+    width_char: u16,
+
     /// Squeeze
     #[arg(short, long, default_value_t = 2)]
     squeeze: u8,
@@ -40,21 +44,20 @@ fn lumi_8_to_char(lumi: u8) -> char {
     }
 }
 
-/// Downsample an image by a factor of `block_size`
 fn shrink_image<T: GenericImageView>(
     img: &T,
-    block_size: u32,
-    squeeze: u8,
+    config: &Config,
 ) -> ImageBuffer<T::Pixel, Vec<<T::Pixel as Pixel>::Subpixel>>
 where
-    <T as GenericImageView>::Pixel: 'static
+    <T as GenericImageView>::Pixel: 'static,
 {
-    let (width, height) = img.dimensions();
-    let (new_width, new_height) = (width / block_size, height / block_size);
+    let ratio = img.dimensions().0 as f32 / (config.width_char / config.squeeze as u16) as f32;
+    let new_width = (img.dimensions().0 as f32 / ratio) as u32;
+    let new_height = (img.dimensions().1 as f32 / ratio) as u32;
 
     resize(
         img,
-        new_width * squeeze as u32,
+        new_width * config.squeeze as u32,
         new_height,
         FilterType::Lanczos3,
     )
@@ -82,17 +85,15 @@ pub fn repeat_char(c: char, times: usize) -> String {
 /// Run the application
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // load image and convert to grey scale
-    let img = image::open(config.input_file)?.into_luma8();
+    let img = image::open(&config.input_file)?.into_luma8();
 
     // TODO: avoid printing this stuff (or maybe only print if a --verbose flag is set)
     println!("Original image dimensions: {:?}", img.dimensions());
 
     // get a smaller image (downsample)
-    // TODO: the block_size should not be fixed, but based on the image size (and the desired output size)
-    let block_size = 32;
-    let img_smaller = shrink_image(&img, block_size, config.squeeze);
+    let img_smaller = shrink_image(&img, &config);
 
-    println!("Reduced image size by a factor of {}x", block_size);
+    //println!("Reduced image size by a factor of {}x", block_size);
     println!(
         "Downsampled image dimensions: {:?}",
         img_smaller.dimensions()
