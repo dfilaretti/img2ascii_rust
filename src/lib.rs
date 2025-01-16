@@ -32,7 +32,8 @@ pub struct Config {
 }
 
 /// Convert a luminance value to a character
-// TODO: why only using those 4 ASCII chars?
+/// NOTE: at the moment this is simply mapping the entire range of luminance values to a 4 different characters.
+///       This could be improved by using a more sophisticated mapping, e.g. to use more characters.
 fn lumi_8_to_char(lumi: u8) -> char {
     match lumi {
         0..=63 => ' ',
