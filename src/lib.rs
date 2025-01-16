@@ -1,7 +1,7 @@
 //! # img2ascii
 //!
 //! Convert pictures into ASCII art, allowing to specify the width of the output (in characters).
-//! 
+//!
 
 use clap::Parser;
 use image::{
@@ -38,14 +38,15 @@ fn lumi_8_to_char(lumi: u8) -> char {
     }
 }
 
-fn shrink_image<T: GenericImageView>(
+fn shrink_image<T>(
     img: &T,
     config: &Config,
 ) -> ImageBuffer<T::Pixel, Vec<<T::Pixel as Pixel>::Subpixel>>
 where
+    T: GenericImageView,
     <T as GenericImageView>::Pixel: 'static,
 {
-    // TODO: check the number types here. Can we avoid all this conversions? 
+    // TODO: check the number types here. Can we avoid all this conversions?
     let ratio = img.dimensions().0 as f32 / (config.width_char / config.squeeze as u16) as f32;
     let new_width = (img.dimensions().0 as f32 / ratio) as u32;
     let new_height = (img.dimensions().1 as f32 / ratio) as u32;
