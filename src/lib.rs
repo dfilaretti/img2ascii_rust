@@ -73,7 +73,6 @@ fn img_to_ascii(img: image::GrayImage) -> String {
 }
 
 /// Repeat a character `c` `times` times
-/// TODO: this certainly could be generic; also it's probably doable inline with built-in functions
 /// TODO: currently not using this. How about allowing users to chose whether to use this or the image stretch method instead?
 pub fn repeat_char(c: char, times: usize) -> String {
     std::iter::repeat(c).take(times).collect()
