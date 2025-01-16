@@ -25,6 +25,10 @@ pub struct Config {
     /// Squeeze
     #[arg(short, long, default_value_t = 2)]
     squeeze: u8,
+
+    /// Verbose mode
+    #[arg(short, long, default_value_t = false)]
+    verbose: bool,
 }
 
 /// Convert a luminance value to a character
@@ -83,17 +87,23 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // load image and convert to grey scale
     let img = image::open(&config.input_file)?.into_luma8();
 
-    // TODO: avoid printing this stuff (or maybe only print if a --verbose flag is set)
-    println!("Original image dimensions: {:?}", img.dimensions());
+    if config.verbose {
+        println!("Loaded image: {}", config.input_file);
+        println!("Original image dimensions: {:?}", img.dimensions());
+    }
 
     // get a smaller image (downsample)
     let img_smaller = shrink_image(&img, &config);
 
     //println!("Reduced image size by a factor of {}x", block_size);
-    println!(
-        "Downsampled image dimensions: {:?}",
-        img_smaller.dimensions()
-    );
+    if config.verbose {
+        println!(
+            "Downsampled image dimensions: {:?}",
+            img_smaller.dimensions()
+        );
+
+        println!("Converting image to ASCII art...");
+    }
 
     // generate and print ASCII art
     println!("{}", img_to_ascii(img_smaller));
