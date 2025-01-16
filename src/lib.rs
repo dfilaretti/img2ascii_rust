@@ -3,7 +3,7 @@
 //! Convert pictures into ASCII art, allowing to specify the width of the output (in characters).
 //!
 
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use image::{
     imageops::{resize, FilterType},
     GenericImageView, ImageBuffer, Pixel,
@@ -22,13 +22,37 @@ pub struct Config {
     #[arg(short, long, default_value_t = 80)]
     width_char: u16,
 
-    /// Squeeze
+    /// Squeeze factor
     #[arg(short, long, default_value_t = 2)]
     squeeze: u8,
 
-    /// Verbose mode
+    /// Display some debug information
     #[arg(short, long, default_value_t = false)]
     verbose: bool,
+
+    /// Correction mode
+    #[arg(short, long, value_enum, default_value_t = CorrectionMode::Stretch)]
+    correction_mode: CorrectionMode,
+}
+
+/// Mapping an (grey scale) image to ASCII pixel-by-pixel will usually lead to a distorted image, since 
+/// the aspect ratio of the characters is not the same as the pixels (i.e. we can think of pixels as being 
+/// perfect squares while characters are usually taller than they are wide). This can be corrected in different
+/// way, and we offer two here. 
+/// 
+/// # RepeatChars
+/// 
+/// This is the simplest method, where we simply repeat each character 'n' times (horizontally). Since characters
+/// are taller then wide, we can repeat each character 2 or 3 times to "build a square" (or close to it).
+/// 
+/// # Stretch
+/// 
+/// Here me map pixels to characters 1:1 (i.e. each pixel is represented by a single character) but in order to
+/// fix the aspect ratio we stretch the image horizontally by a factor of 2 or 3 (before generating the ASCII art).
+#[derive(ValueEnum, Debug, Clone)]
+enum CorrectionMode {
+    Stretch,
+    RepeatChars,
 }
 
 /// Convert a luminance value to a character
