@@ -21,7 +21,7 @@ use image::{
     imageops::{resize, FilterType},
     GenericImageView, ImageBuffer, Pixel,
 };
-use std::error::Error;
+use std::{error::Error, iter::repeat_n};
 
 /// Convert an image file to ASCII art
 #[derive(Parser, Debug)]
@@ -95,7 +95,7 @@ where
 
     let width_mult_factor = match config.mode {
         HorizontalAdjustmentMode::Stretch => config.amount,
-        _ => 1,
+        HorizontalAdjustmentMode::Repeat => 1,
     };
 
     resize(
@@ -108,27 +108,21 @@ where
 
 /// Convert a grey-scale image to ASCII art by mapping each pixel (consisting of
 /// a single luminance value) to a character.
-fn img_to_ascii(img: image::GrayImage, config: &Config) -> String {
+fn img_to_ascii(img: &image::GrayImage, config: &Config) -> String {
     // repeat each char n times horizontally to fix aspect ratio issue
     let horiz_repeat_count = match config.mode {
+        HorizontalAdjustmentMode::Stretch => 1,
         HorizontalAdjustmentMode::Repeat => config.amount,
-        _ => 1,
     } as usize;
 
-    img.enumerate_rows()
+    img.rows()
         // map each row to a string of ASCII characters (terminating with a newline)
-        .map(|(_, row)| {
-            row.map(|(_, _, lumi)| repeat_char(lumi_8_to_char(lumi.0[0]), horiz_repeat_count))
-                .collect::<String>()
-                + "\n"
+        .flat_map(|row| {
+            row.flat_map(|lumi| repeat_n(lumi_8_to_char(lumi.0[0]), horiz_repeat_count))
+                .chain(std::iter::once('\n'))
         })
         // collect all the rows into a single string
         .collect::<String>()
-}
-
-/// Takes a char and return a `String` consisting of that char repeated `n` times
-fn repeat_char(c: char, n: usize) -> String {
-    std::iter::repeat(c).take(n).collect()
 }
 
 /// Run the application
@@ -158,7 +152,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     }
 
     // generate and print ASCII art
-    println!("{}", img_to_ascii(downsampled_image, &config));
+    println!("{}", img_to_ascii(&downsampled_image, &config));
 
     Ok(())
 }
