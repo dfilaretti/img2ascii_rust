@@ -89,9 +89,14 @@ fn downsample_image<P: Pixel + 'static>(
 ) -> ImageBuffer<P, Vec<P::Subpixel>>
 where
 {
-    let ratio = img.dimensions().0 / (config.width / config.amount as u32);
-    let new_width = img.dimensions().0 / ratio;
-    let new_height = img.dimensions().1 / ratio;
+    // TODO: overflow check
+    let div_round = |n, d| (n + d / 2) / d;
+    let amount = config.amount as u32;
+    let new_width = div_round(config.width, amount);
+    let new_height = div_round(
+        config.width * img.dimensions().1,
+        img.dimensions().0 * amount,
+    );
 
     let width_mult_factor = match config.mode {
         HorizontalAdjustmentMode::Stretch => config.amount,
