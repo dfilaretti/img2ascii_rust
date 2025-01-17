@@ -1,226 +1,99 @@
 # img2ascii
 
+Convert images into ASCII art.
+
+User can provide additional options to specify the desired width in characters,
+as well as the amount and type of horizontal correction to apply. (this is needed
+because, unlike pixels which can be considered perfect squares, characters are more
+tall than they are wide, meaning that directly mapping each pixel to a character will
+result in a horizontally squeezed image).
+
+## Build 
+
+```
+cargo build
+```
+
 ## Basic usage 
+
+Let's use our Mario as an example: 
 
 <img src="imgs/mario.jpg" width="400">
 
+Just type
 
 ```
 cargo run -- -i imgs/mario.jpg 
 ```
 
-Which gives us the output:
+Which gives us:
 
 ```
-@@@@@@@@@@o@@@@@@@@@@@@@@o@@@@@@@@@@@@@@@@@@@@@ooo@@@@o@@@@@@@@@o@o.o@o@@@@@@o@@
-@@@@oo@@@ooo@@@@o@ooo@@o.o@@@@@@@@@@@@@@@@@@@@@ooo@@@@o@@@@@@@@@ooooooo@@@@@@o@@
-@@@@oo@@oooooo@ooooo@@@o.@@@@@@@@@@@@@@@@@@@@@@ooo@@ooo@@@@@@@@ooo..oo@@@@oo@oo@
-@@@oo.@@oooooooooooo@@o..@@@@@@@@@@@@@@@@@@@@@@oo@o.  .@@@@@@@ooooo@@@@@@ooo@oo@
-@@@oo.o@ooooooooooo@@oo.o@@@@@@@@@@@@@@@@@@@@@ooo.     o@oo@ooooooo@oo@@ooo@@oo@
-@@@oooo@oooooooooo@@oo..o@@@@@@@@@@@@@@@@@@@@@@o    ..  ooo@o@@@ooooo@@@oo@@@@oo
-@@@oooo@@ooo@@@@@@oooo.o@@@@@@@@@@@@@@@@@@@@@@o    ...  .o@@@@@ooooo@@@ooo@@@oo@
-oo@@@@oooo@@@@@@@@ooo..o@@@@@@@@@@@o@@o@oo@@@o    ..... .@@@@@o.oooo@@ooo@@@oooo
-@@@@@@@@@o..oo@@ooooo.o@@@@@@@@@@@ooo@o@oo@@o     .....  o@@@ooooooo@@oo@@@ooooo
-@@@@@@ooo.     ..oooooo@@@@@oo@@@@oo@@@@ooo.      ....   o@@@oo@oooo@o.o@oooo@oo
-@@@@@@@@@@.       ..oo@@@@@@@o@@oo..o.....          .    o@@oo@o.oooooooooo@@@oo
-@@@@@@@@@@o ...      .oo@ooooo..           .             @@ooo@o.oooo.oo@o@@oooo
-@oo@@@oooooo......                .     ....             .@oooo...ooooooo@@ooooo
-@@@@@oooooo.. .....      ..      .o..                     ooooo..oooooooo@oooooo
-@@@@@@o..     ....      ...     ..o@.                     ooooo.oo....oooooooooo
-oooooo.                         .oo@o                     .ooo.oo.. ..oooooooooo
-ooooo.                          .@@@@.           .          ......  ..ooo.oooooo
-...o.                           o@@@@o.    ..   ..          ......  ..oooooooooo
-  ...                   .       o@@@@oo.     ...              .     ...ooooooooo
-.  .            ..    .o    o.  o@@@@@@o.                            ..oooo.oooo
-..             ...     ....o.  .@@@@@@@@@ooo..oo.                    ...ooooooo@
-   .          ....            .@@@@@@@@@oo@@@@@@o..                  ..ooooooooo
-              ....           o@@@@@@@@ooooooooooooo..               ...ooooooooo
-              . ..        ..o@@@oooooo.....ooooooooo.                 ..oooooooo
-             .....        .o@@@@o......  .oooooooooo......             ..ooooooo
-             ...o.       ..o@@@@@o...  ....oooooooooooooo.... ..        ..o.oooo
-            ...o@.       .o@@o@@oooo.  ..........o.........     .        ...oooo
-              o@@o.     ..oooooooo....  ..................                ..oooo
-             .o@@@@.......  ..oo..........................                 ..ooo
-             o@@@@@@ooo..  ...............................                 ...oo
-             o@@@@@@@@@ooooooo............................                ...ooo
-            .o@@@@@@@@@@ooooo.............................                ....oo
-             o@@@@@@@@@@@oooooo............................               .....o
-            o@@@@@@@@@@@ooooooooooooo......................               .....o
-          .o@@@@@@@@@@@oooooooooooooooo.....................              .....o
-         .oo@@@@@@@@@@@oooooooooooooooooo..................               .....o
-        ..oo@@@@@@@@@@@ooooooooooooooooooo.o...............               .....o
-         ..oo@@@@@@@@@ooooooooooooooooooo.ooo.............                 .....
-          ..o@@@@@@@@@@@oooooooooo.ooooooooooooooo.......                .......
-            .oo@@@@@@@@@ooooooooooooooooooooooooooo.....                 ......o
-            ..o@@@@@@@@@ooooooooooooooooooooooooooo....                ........o
-             .ooo@@@@@@@@@o....ooooooooooooooooo....                   ........o
-              .o@@@@@@@@@@@o.....o.ooooooooooo....                      ........
-             .o@@@@@@@@@@@@oo...................                        ........
-            .o@@@@@@@@@@@@@ooo.      ..........                           ......
-            .@@@@o@@@@@@o@@oooo.      ........                  ........ .......
-             o@oo@@@@@@@o@oooooo     .........               . .................
-               o@@@@@@@o@@oooooo.   ....ooo..   ................ooo.............
-               .@@@@@@oo@@oooooo. ......ooo.. .....oooo..oooo.ooooooo...........
-                .@@@@o.o@oo.ooo. .......oo.....ooooooooooooooooooooo..ooo.....oo
-                  .....oo.....   ........... ..ooooooooooooooooooooooo..oo....oo
-                                   ......... ...ooooooooooooooooooooo...ooo..ooo
-                                    .......o......oooooooooooo@ooooooo..ooo..ooo
-                                     ..o...........ooooooooooo@ooooooooooooooooo
-                                       ...... .......oooooooo@oo@@ooooooooo.oooo
-                                         ....  ........oooooo@ooo@ooooooo....@oo
-
+@@@o@@@o@@@@@@@@@@o@@@@@@@@@@@@@@@oo@@@o@@@@@@o@ooo@@@@@o@
+@@@o@@oooo@oooo@@.o@@@@@@@@@@@@@@@oo@@@o@@@@@@ooooo@@@ooo@
+@@o.o@oooooooo@@o.@@@@@@@@@@@@@@@@ooo. o@@@@@oooo@@@@oo@o@
+@@o.o@ooooooo@@o.o@@@@@@@@@@@@@@@oo.    o@o@oooo@o@@oo@@oo
+@@ooo@ooo@@o@@oo.o@@@@@@@@@@@@@@@@.  .. .o@@@@ooo@@@oo@@oo
+@@@@oooo@@@@@oo..@@@@@@@@o@@@o@@@.  .... o@@@ooooo@oo@@ooo
+@@@@@@o..oooooo.o@@@@o@@@o@@@@@o.   .... o@@ooooo@o.@@oooo
+@@@@@oo     ..oo@@@@@@@@oooooo.      ..  o@oooooooooooo@@o
+@@@@@@@o ..    .o@@ooo..       .         o@ooo.ooooooo@ooo
+@o@@oooo.....           .    ...          oooo.oooooo@oooo
+@@@@oo... ....   ...    oo.               ooo.ooo.oooooooo
+@@@oo.           .     .o@o               .oo.o....ooooooo
+oooo                   .@@@.       .       ..... ..ooooooo
+ .o.                   .@@@o    . ..        ..    .ooooooo
+  .         .   ..  .. o@@@@o.                    .ooooooo
+.          ..    .... .@@@@@@oooooo.              ..oooooo
+          ...        .@@@@@@oooo@@oo..            .ooooooo
+          ...      ..@@ooooo...oooooo.            ..oooooo
+         ....      .@@@o.... .oooooooo.....         .ooooo
+         ..o.     .o@@@@o.. ......oooo.o...  ..     ...ooo
+          .@o    ..oooooo..  .............           ..ooo
+          o@@@..... ......................            ..oo
+         .@@@@@@o.........................            ..oo
+         .@@@@@@@ooooo....................            ..oo
+         .@@@@@@@@ooooo....................           ...o
+        .@@@@@@@@oooooooooo................           ...o
+       .o@@@@@@@@oooooooooooo..............           ...o
+      .oo@@@@@@@oooooooooooooo.o...........           ....
+       .o@@@@@@@@oooooooo.ooooooooo.......            ....
+        .o@@@@@@@oooooooooooooooooooo....            .....
+         .o@@@@@@@ooooooooooooooooooo..             .....o
+          .o@@@@@@@o...oooooooooooo..               ......
+         .o@@@@@@@@oo..............                 ......
+         o@@@@@@@@@@oo.    .......                    ....
+         o@oo@@@@o@oooo    ......             ............
+          .o@@@@@@@oooo.  ...oo..  ............oo.........
+           .@@@@o@@oooo. ....oo....ooooooooooooooo........
+            .oooo@o.... ..........oooooooooooooooo.oo....o
+                ..       ....... ..ooooooooooooooo..oo..oo
+                          .....o....ooooooooo@ooooo.ooo.oo
+                            ..... ....oooooooooooooooooooo
+                             .... .....oooooooo@ooooo..o@o
 ```
 
 ## More options 
 
-### Setting the desired ASCII art width (in characters) 
-
-If not provided, we'll use a default value. 
+The example above uses the default settings. To see all available options run 
 
 ```
-cargo run -- -i imgs/mario.jpg -w 50
+cargo run -- -h
 ```
 
-```
-@@@@@@o@@@@@@@@o@@@@@@@@@@@@@@o@@@o@@@@@oooo@@@@o@
-@@oo@ooo@oooo@o.@@@@@@@@@@@@@oo@@o@@@@@ooooo@@ooo@
-@@oo@ooooooo@o.o@@@@@@@@@@@@@@o.  o@o@oooo@@@oo@o@
-@@oo@oooooo@oo.@@@@@@@@@@@@@@o     oo@o@ooo@@o@@oo
-@@@@ooo@@@@oo.o@@@@@@@o@@o@@o  ... .@@@oooo@oo@@oo
-@@@@oo..ooooooo@@@o@@@o@@@@o   ... .@@ooooooo@oooo
-@@@@@@.    ..o@@@@o@o.oo...     .  .@oo@ooooooo@@o
-@@@@@@o...   ......       ..       .@ooo.ooooo@ooo
-@@@@ooo. ...        .o.             ooo.oooooooooo
-@@@o.     .    .    .oo             .oo.o...oooooo
-ooo.                o@@.      .      ....  .oooooo
- ..                 o@@o.                  .oooooo
-          .   .. .. @@@@@o....             .oooooo
-         ..       .o@@@@@oo@@@o.           .oooooo
-         ..      .@@oooo...ooooo.          ..ooooo
-        ...     .o@@o... .ooooooo....       ..oooo
-         oo     o@@@oo. ......o......        ...oo
-        .@@o  ....oo.... ...........          ..oo
-        o@@@@o......................           ..o
-        o@@@@@@oooo.................          ...o
-        o@@@@@@@oooo.................         ...o
-      .o@@@@@@@ooooooooo.............         ...o
-     .o@@@@@@@oooooooooooo...........         ...o
-      .o@@@@@@oooooooooooooo........           ...
-       .o@@@@@@ooooooooooooooooo...           ....
-        .o@@@@@@oooooooooooooooo..          ......
-         o@@@@@@@o..o.ooooooo..              .....
-        o@@@@@@@@o. ..........                ....
-        @@o@@@@o@oo.   ......           ... . ....
-         o@@@@@@oooo  ...o..   .... ..............
-          o@@@o@oooo ....oo...ooooooooooooo.......
-           ...oo...  ........oooooooooooooo.oo...o
-                      .........ooooooooooooo.oo.oo
-                        ........ooooooo@oooooooooo
-                         ... .....oooooo@ooooo..oo
-```
-
-### Setting the horizontal squeeze factor 
-
-This defaults to 2 and should work fine most of the times.
-
+which will show all available configuration options: 
 
 ```
-cargo run -- -i imgs/mario.jpg -w 40 -s 1
-```
+Convert an image file to ASCII art
 
-```
-@@@@@@@@@@@@o@@@@@@@@@@@o@@@@@@@@oo@@@o@
-@@o@oo@@@o@@o@@@@@@@@@@@o@@o@@@@ooo@@@o@
-@@o@oooooo@oo@@@@@@@@@@oo@oo@@@@o.o@@oo@
-@@o@oooooo@.o@@@@@@@@@@@o. o@@@ooo@@@o@@
-@oooooooo@o.o@@@@@@@@@@@.  .@@ooooo@o@@o
-@o.oooooo@o.@@@@@@@@@@@o    oo@@oo@@o@@o
-@ooooo@@@ooo@@@@@@@@@@@. .. o@@ooo@oo@@o
-o@@oo@@@@o.o@@@@@@@@o@o  .. o@@ooo@oo@oo
-@@@@@.o@oo.o@@@@@oo@o@.  .. .@oooo@o@ooo
-@@@oo  ..oo@@@o@@o@@o.   .. .@oooooooooo
-@@@@o.   .o@@@o@o.o..     . .@oooooooo@o
-@@@@@. .  .o@oo.     .    . .@oooooo@@oo
-oo@ooo...           ..       ooo.ooooooo
-@@@ooo...   ..  .o           oo.oooooooo
-@@@o.  ..   .   .o.          oooo..ooooo
-o@o.            .@.          oo.. .ooooo
-oo.             o@o     .     ... .ooooo
-.o.             o@o     .     ... .ooooo
- ..             o@@.   .          .ooooo
-        .  .  . @@@o.             .ooooo
-.       .  .....@@@@oo.o.          .oooo
-       ..      o@@@@o@@@o.        .ooooo
-       ..     .@@@@ooooooo        .ooooo
-        .    .o@ooo..ooooo.        .oooo
-       ..    .@@o.. .ooooo...      ..ooo
-       ..    .@@o.  .ooooooo.. .    ..oo
-       oo    o@@oo. ....o....   .   ..oo
-       o@   .oooo.. .........        .oo
-       @@o... .o.............        ..o
-      .@@@o..................         .o
-      .@@@@oooo..............        ..o
-      .@@@@@oo...............        ..o
-      .@@@@@@ooo.............        ...
-      o@@@@@oooooo............       ..o
-     .@@@@@@ooooooo...........       ..o
-     o@@@@@@oooooooo..........       ...
-    .o@@@@@oooooooooo........        ...
-     o@@@@@oooooooooooo......         ..
-     .o@@@@@ooooo.ooooooo....        ...
-      .@@@@@oooooooooooooo..        ....
-      .o@@@@ooooooooooooo..         ....
-       o@@@@@o.ooooooooo..          ....
-       o@@@@@o....ooooo..           ....
-      .@@@@@@o..........            ....
-      o@@@@@@@o.  ......             ...
-      o@o@@@@@o.   ....         ........
-      .oo@@@oooo  .....        .........
-       .@@@@@ooo  ..o.. ........oo......
-        @@@o@ooo ...o.....ooooooooo.....
-        o@oo@oo. ...o..ooooooooooo.o...o
-         ..oo..  .......ooooooooooo.o..o
-                 .......ooooooooooo.o..o
-                  ...o...oooooo@ooo.oooo
-                   ..o....ooooo@oooooooo
-                    ......oooooo@oooo.oo
-                    ..  ...ooooo@ooo..oo
-```
+Usage: img2ascii [OPTIONS] --input <INPUT>
 
-or also 
-
+Options:
+  -i, --input <INPUT>    Image file to convert
+  -w, --width <WIDTH>    Desired width of the ASCII art (in characters) [default: 80]
+  -m, --mode <MODE>      Horizontal adjustment mode [default: stretch] [possible values: stretch, repeat]
+  -a, --amount <AMOUNT>  Horizontal adjustment amount [default: 2]
+  -v, --verbose          Display debug information
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
 ```
-cargo run -- -i imgs/mario.jpg -w 60 -s 3
-```
-
-```
-@@@o@@@o@@@@@@@@@@o@@@@@@@@@@@@@@@@oo@@@@@@@@@@@oo.oo@@@@oo@
-@@@oo@ooooooooo@@o.@@@@@@@@@@@@@@@@oooo..@@@@@@ooooo@@@oo@o@
-@@o.o@oooooooo@oo.o@@@@@@@@@@@@@@@@o.    .@o@ooooo@o@@oo@@oo
-@@@@oooo@@@@@@oo.o@@@@@@@@o@@@@@@@o   ... .@@@@oooo@@oo@@ooo
-@@@@@oo....oooooo@@@@@@@@@o@@@ooo.   .... .@@oooooo@oo@ooooo
-@@@@@@@o      ..o@@@oooo........          .@oooo.ooooooo@ooo
-@@@@@oooo.....    ..     ..                .ooo..oooooo@oooo
-@@@@o..    ...    .     .o@.               .ooo.o...oooooooo
-.oo.                    o@@@.       .        ....  ..ooooooo
-  ..        .    ..  .  o@@@@o                     ..ooooooo
-           ...      ...o@@@@@@oooooo..              .ooooooo
-           ..        .@@@oooo...ooooooo.            ..oooooo
-          ....     .o@@@o...  ..ooooooo.....         ..ooooo
-          .o@.    ..oooooo.. ...............           ..ooo
-          o@@@oo...........................             ..oo
-         .@@@@@@@ooooo......................           ...oo
-         .@@@@@@@@@oooooo.o.................            ...o
-       .o@@@@@@@@oooooooooooo................          ....o
-      ..o@@@@@@@@oooooooooooooo.o...........            ....
-        .o@@@@@@@@oooooooooooooooooooo....             .....
-          .o@@@@@@@oo.ooooooooooooooo...             ......o
-          .o@@@@@@@@o.........ooo....                 ......
-         .@@@@@@@@@@ooo.    .......               .    .....
-          .oo@@@@@@@oooo   .......   ..... .................
-            o@@@oo@oooo. .....oo....oooooooooooooooo........
-                 ...      ....... ..oooooooooooooooo..oo..oo
-                            ....o.....oooooooo@ooooooooooooo
-```
-
-
