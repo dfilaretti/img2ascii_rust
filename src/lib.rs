@@ -89,13 +89,14 @@ fn downsample_image<P: Pixel + 'static>(
 ) -> ImageBuffer<P, Vec<P::Subpixel>>
 where
 {
-    // TODO: overflow check
-    let div_round = |n, d| (n + d / 2) / d;
+    // NB: we use checked_add etc. followed by unwrap to cause panic if overflow occurs
+    //     (better than silently returning the wrong value)
+    let div_round = |n: u32, d| (n.checked_add(d / 2).unwrap()) / d;
     let amount = config.amount as u32;
     let new_width = div_round(config.width, amount);
     let new_height = div_round(
-        config.width * img.dimensions().1,
-        img.dimensions().0 * amount,
+        config.width.checked_mul(img.dimensions().1).unwrap(),
+        img.dimensions().0.checked_mul(amount).unwrap(),
     );
 
     let width_mult_factor = match config.mode {
