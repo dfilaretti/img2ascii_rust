@@ -33,7 +33,7 @@ pub struct Config {
 
     /// Desired width of the ASCII art (in characters)
     #[arg(short, long, default_value_t = 80)]
-    width: u16,
+    width: u32,
 
     /// Horizontal adjustment mode
     #[arg(short, long, value_enum, default_value_t = HorizontalAdjustmentMode::Stretch)]
@@ -55,13 +55,13 @@ pub struct Config {
 ///
 /// # RepeatChars
 ///
-/// This is the simplest method, where we simply repeat each character 'n' times (horizontally) when generating 
-/// the ASCII art. 
+/// This is the simplest method, where we simply repeat each character 'n' times (horizontally) when generating
+/// the ASCII art.
 ///
 /// # Stretch
 ///
 /// Here me map pixels to characters 1:1 (i.e. each pixel is represented by a single character) but in order to
-/// fix the aspect ratio we stretch the input image horizontally by a factor of 2 or 3 to compensate for the 
+/// fix the aspect ratio we stretch the input image horizontally by a factor of 2 or 3 to compensate for the
 /// horizontal squeezing effect.
 #[derive(ValueEnum, Debug, Clone)]
 enum HorizontalAdjustmentMode {
@@ -83,17 +83,15 @@ fn lumi_8_to_char(lumi: u8) -> char {
 
 /// Build a downsampled (usually smaller) image based on the desired output width in characters
 /// as well as on the chosen horizontal adjustment method.
-fn downsample_image<T>(
-    img: &T,
+fn downsample_image<P: Pixel + 'static>(
+    img: &impl GenericImageView<Pixel = P>,
     config: &Config,
-) -> ImageBuffer<T::Pixel, Vec<<T::Pixel as Pixel>::Subpixel>>
+) -> ImageBuffer<P, Vec<P::Subpixel>>
 where
-    T: GenericImageView,
-    <T as GenericImageView>::Pixel: 'static,
 {
-    let ratio = img.dimensions().0 as f32 / (config.width / config.amount as u16) as f32;
-    let new_width = (img.dimensions().0 as f32 / ratio) as u32;
-    let new_height = (img.dimensions().1 as f32 / ratio) as u32;
+    let ratio = img.dimensions().0 / (config.width / config.amount as u32);
+    let new_width = img.dimensions().0 / ratio;
+    let new_height = img.dimensions().1 / ratio;
 
     let width_mult_factor = match config.mode {
         HorizontalAdjustmentMode::Stretch => config.amount,
