@@ -7,12 +7,12 @@
 //! because, unlike pixels which can be considered perfect squares, characters are more
 //! tall than they are wide, meaning that directly mapping each pixel to a character will
 //! result in a horizontally squeezed image).
-//! 
-//! # Future work 
-//! 
-//! - improve the mapping between luminance values and characters. 
-//!   At the moment we map then entire range to only 4 characters 
-//!   (see the `lumi_8_to_char`function) which actually looks surptisingly nice.  But can 
+//!
+//! # Future work
+//!
+//! - improve the mapping between luminance values and characters.
+//!   At the moment we map then entire range to only 4 characters
+//!   (see the `lumi_8_to_char`function) which actually looks surptisingly nice.  But can
 //!   we do any better?
 //!
 
@@ -55,13 +55,14 @@ pub struct Config {
 ///
 /// # RepeatChars
 ///
-/// This is the simplest method, where we simply repeat each character 'n' times (horizontally). Since characters
-/// are taller then wide, we can repeat each character 2 or 3 times to "build a square" (or close to it).
+/// This is the simplest method, where we simply repeat each character 'n' times (horizontally) when generating 
+/// the ASCII art. 
 ///
 /// # Stretch
 ///
 /// Here me map pixels to characters 1:1 (i.e. each pixel is represented by a single character) but in order to
-/// fix the aspect ratio we stretch the image horizontally by a factor of 2 or 3 (before generating the ASCII art).
+/// fix the aspect ratio we stretch the input image horizontally by a factor of 2 or 3 to compensate for the 
+/// horizontal squeezing effect.
 #[derive(ValueEnum, Debug, Clone)]
 enum HorizontalAdjustmentMode {
     /// Horizontally stretch the image before converting to ASCII
@@ -71,8 +72,6 @@ enum HorizontalAdjustmentMode {
 }
 
 /// Convert a luminance value to a character
-/// NOTE: at the moment this is simply mapping the entire range of luminance values to a 4 different characters.
-///       This could be improved by using a more sophisticated mapping, e.g. to use more characters.
 fn lumi_8_to_char(lumi: u8) -> char {
     match lumi {
         0..=63 => ' ',
@@ -82,7 +81,9 @@ fn lumi_8_to_char(lumi: u8) -> char {
     }
 }
 
-fn shrink_image<T>(
+/// Build a downsampled (usually smaller) image based on the desired output width in characters
+/// as well as on the chosen horizontal adjustment method.
+fn downsample_image<T>(
     img: &T,
     config: &Config,
 ) -> ImageBuffer<T::Pixel, Vec<<T::Pixel as Pixel>::Subpixel>>
@@ -90,7 +91,6 @@ where
     T: GenericImageView,
     <T as GenericImageView>::Pixel: 'static,
 {
-    // TODO: check the number types here. Can we avoid all this conversions?
     let ratio = img.dimensions().0 as f32 / (config.width / config.amount as u16) as f32;
     let new_width = (img.dimensions().0 as f32 / ratio) as u32;
     let new_height = (img.dimensions().1 as f32 / ratio) as u32;
@@ -108,7 +108,8 @@ where
     )
 }
 
-/// Convert an image to ASCII art
+/// Convert a grey-scale image to ASCII art by mapping each pixel (consisting of
+/// a single luminance value) to a character.
 fn img_to_ascii(img: image::GrayImage, config: &Config) -> String {
     // repeat each char n times horizontally to fix aspect ratio issue
     let horiz_repeat_count = match config.mode {
@@ -127,9 +128,9 @@ fn img_to_ascii(img: image::GrayImage, config: &Config) -> String {
         .collect::<String>()
 }
 
-/// Repeat a character `c` times
-fn repeat_char(c: char, times: usize) -> String {
-    std::iter::repeat(c).take(times).collect()
+/// Takes a char and return a `String` consisting of that char repeated `n` times
+fn repeat_char(c: char, n: usize) -> String {
+    std::iter::repeat(c).take(n).collect()
 }
 
 /// Run the application
@@ -137,6 +138,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // load image and convert to grey scale
     let img = image::open(&config.input)?.into_luma8();
 
+    // print some debug information
     if config.verbose {
         println!("Loaded image: {}", config.input);
         println!("Original image dimensions: {:?}", img.dimensions());
@@ -144,21 +146,21 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
         println!("Aspect ratio correction method: {:?}", config.mode)
     }
 
-    // get a smaller image (downsample)
-    let img_smaller = shrink_image(&img, &config);
+    // build the downsampled image
+    let downsampled_image = downsample_image(&img, &config);
 
-    //println!("Reduced image size by a factor of {}x", block_size);
+    // some more debug output if needed
     if config.verbose {
         println!(
             "Downsampled image dimensions: {:?}",
-            img_smaller.dimensions()
+            downsampled_image.dimensions()
         );
 
         println!("Converting image to ASCII art...");
     }
 
     // generate and print ASCII art
-    println!("{}", img_to_ascii(img_smaller, &config));
+    println!("{}", img_to_ascii(downsampled_image, &config));
 
     Ok(())
 }
