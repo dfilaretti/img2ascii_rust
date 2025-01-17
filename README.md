@@ -18,7 +18,7 @@ cargo build
 
 Let's use our Mario as an example: 
 
-<img src="imgs/mario.jpg" width="400">
+<img src="imgs/mario.jpg" width="200">
 
 Just type
 
