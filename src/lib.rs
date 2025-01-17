@@ -1,6 +1,19 @@
 //! # img2ascii
 //!
-//! Convert pictures into ASCII art, allowing users to specify the desired width of the output (in characters).
+//! Convert images into ASCII art.
+//!
+//! User can provide additional options to specify the desired width in characters,
+//! as well as the amount and type of horizontal correction to apply. (this is needed
+//! because, unlike pixels which can be considered perfect squares, characters are more
+//! tall than they are wide, meaning that directly mapping each pixel to a character will
+//! result in a horizontally squeezed image).
+//! 
+//! # Future work 
+//! 
+//! - improve the mapping between luminance values and characters. 
+//!   At the moment we map then entire range to only 4 characters 
+//!   (see the `lumi_8_to_char`function) which actually looks surptisingly nice.  But can 
+//!   we do any better?
 //!
 
 use clap::{Parser, ValueEnum};
@@ -16,23 +29,23 @@ use std::error::Error;
 pub struct Config {
     /// Image file to convert
     #[arg(short, long)]
-    input_file: String,
+    input: String,
 
-    /// Expected width of the output ASCII art (in characters)
+    /// Desired width of the ASCII art (in characters)
     #[arg(short, long, default_value_t = 80)]
-    width_char: u16,
+    width: u16,
 
-    /// Squeeze factor
+    /// Horizontal adjustment mode
+    #[arg(short, long, value_enum, default_value_t = HorizontalAdjustmentMode::Stretch)]
+    mode: HorizontalAdjustmentMode,
+
+    /// Horizontal adjustment amount
     #[arg(short, long, default_value_t = 2)]
-    squeeze: u8,
+    amount: u8,
 
     /// Display debug information
     #[arg(short, long, default_value_t = false)]
     verbose: bool,
-
-    /// Correction mode
-    #[arg(short, long, value_enum, default_value_t = CorrectionMode::Stretch)]
-    correction_mode: CorrectionMode,
 }
 
 /// Mapping an (grey scale) image to ASCII pixel-by-pixel will usually lead to a distorted image, since
@@ -50,8 +63,10 @@ pub struct Config {
 /// Here me map pixels to characters 1:1 (i.e. each pixel is represented by a single character) but in order to
 /// fix the aspect ratio we stretch the image horizontally by a factor of 2 or 3 (before generating the ASCII art).
 #[derive(ValueEnum, Debug, Clone)]
-enum CorrectionMode {
+enum HorizontalAdjustmentMode {
+    /// Horizontally stretch the image before converting to ASCII
     Stretch,
+    /// Repeat each character horizontally more than once
     Repeat,
 }
 
@@ -76,12 +91,12 @@ where
     <T as GenericImageView>::Pixel: 'static,
 {
     // TODO: check the number types here. Can we avoid all this conversions?
-    let ratio = img.dimensions().0 as f32 / (config.width_char / config.squeeze as u16) as f32;
+    let ratio = img.dimensions().0 as f32 / (config.width / config.amount as u16) as f32;
     let new_width = (img.dimensions().0 as f32 / ratio) as u32;
     let new_height = (img.dimensions().1 as f32 / ratio) as u32;
 
-    let width_mult_factor = match config.correction_mode {
-        CorrectionMode::Stretch => config.squeeze,
+    let width_mult_factor = match config.mode {
+        HorizontalAdjustmentMode::Stretch => config.amount,
         _ => 1,
     };
 
@@ -96,8 +111,8 @@ where
 /// Convert an image to ASCII art
 fn img_to_ascii(img: image::GrayImage, config: &Config) -> String {
     // repeat each char n times horizontally to fix aspect ratio issue
-    let horiz_repeat_count = match config.correction_mode {
-        CorrectionMode::Repeat => config.squeeze,
+    let horiz_repeat_count = match config.mode {
+        HorizontalAdjustmentMode::Repeat => config.amount,
         _ => 1,
     } as usize;
 
@@ -113,26 +128,20 @@ fn img_to_ascii(img: image::GrayImage, config: &Config) -> String {
 }
 
 /// Repeat a character `c` times
-pub fn repeat_char(c: char, times: usize) -> String {
+fn repeat_char(c: char, times: usize) -> String {
     std::iter::repeat(c).take(times).collect()
 }
 
 /// Run the application
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     // load image and convert to grey scale
-    let img = image::open(&config.input_file)?.into_luma8();
+    let img = image::open(&config.input)?.into_luma8();
 
     if config.verbose {
-        println!("Loaded image: {}", config.input_file);
+        println!("Loaded image: {}", config.input);
         println!("Original image dimensions: {:?}", img.dimensions());
-        println!(
-            "Desired ASCII art width (in characters): {}",
-            config.width_char
-        );
-        println!(
-            "Aspect ratio correction method: {:?}",
-            config.correction_mode
-        )
+        println!("Desired ASCII art width (in characters): {}", config.width);
+        println!("Aspect ratio correction method: {:?}", config.mode)
     }
 
     // get a smaller image (downsample)
