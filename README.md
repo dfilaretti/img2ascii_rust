@@ -109,21 +109,22 @@ Let's start wit our initial image
 
 <img src="imgs/mario.jpg" width="300">
 
-and converti it to grey scale:
+and converti it to grey scale
 
 <img src="imgs/mario-greyscale.jpg" width="300">
 
-So that each pixel can now be represented as a single "luminance" integer value 
+so that each pixel can now be represented as a single "luminance" integer value 
 (usually ranging from `0` to represent black to `255` for white)
 
 ### Mapping pixels to characters
 
-Now the idea is to map each pixel in the original image to an ASCII 
-character based on its luminance. 
-For example, a very dark pixel gets mapped to a character such as `@` while a bright one will get something like `.` (or even
-an empty space, which is a valid ASCII character,  in case it's completely white).
+The basic idea is to map each pixel in the image to a single ASCII 
+character based on the pixel's brightness (or luminance). 
+For example, a very dark pixel could be  mapped to 
+something like `@` while a bright one could be mapped to something like `.` (or even
+an empty space).
 
-This is a good starting point: 
+This is a good starting point for a mapping function:
 
 ```rust
 /// Convert a luminance value to a character
@@ -137,38 +138,32 @@ fn lumi_8_to_char(lumi: u8) -> char {
 }
 ```
 
-(this is super simple but in fact provides acceptable results)
+(it's super simple but in fact already provides acceptable results)
 
-Now, in principle this will work, but there is a problem: our 
-input image has a size of 1070  ×  1508 pixels, meaning 
+But we're not done yet, as there'a little problem: 
+our image has a size of 1070  ×  1508 pixels, meaning 
 that our ASCII art will be 1070 characters wide and 1508 
-characters tall, effectively meaning it will not fit on the 
-screen!! 
+characters tall - definutely too big to fit on the screen!! 
 
 ### Scaling the input image
 
-To have something that fits nicely on the screen we definitely 
-want something much smaller; let's say something around 100 or 
-120 characters wide (the exact number depends on the size of the screen, but this gives an idea).
+To have something that fits nicely on the screen we 
+want our output to be much smaller; something around 100 characters wide can is a good starting point (the exact number depends on the size of the screen, but this gives an idea).
 
-One way to achieve that is to resize the grey-scale image prior
+One way to achieve that is to simply resize the grey-scale image prior
 to apply the pixel-to-ASCII mapping. 
-In our example, we could resize our image so that it is 80
-pixels wide, so that when mapping pixels to ASCII characters, 
-the result will be 80 charactwers wide, as wanted! 
+
+In our example, we could for example resize our image so that it is 80 pixels wide, so that when mapping pixels to ASCII characters, 
+the result will be 80 charactwers wide, as wanted. 
 
 <img src="imgs/mario-greyscale.jpg" width="50">
 
-Ok the proportions are wrong on this page, but you get the idea...
-Making the image smaller is effectively the same as "pixelating" it:
+The proportions are not quite right on this page, but you get the idea; if we zoom in on this tiny image, we can now see each individual pixel:
 
 <img src="imgs/mario-pixels.png" width="300">
 
-You can clearly see each pixel here, and how mapping each of those
-pixels to a character will lead to the derired result.
-
-If we apply the mapping to this much smaller image, we get 
-something like this:
+and we can now imagine filling each "square" with an ASCII
+character, giving us a final result of the correct size this time. 
 
 ```
 @@@@@@o@@@@@@@@o@@@@@@@@@@@@@@o@@@@@@@@o@ooo@@@@o@
@@ -242,17 +237,18 @@ ooo.                o@@.      .      .... ..oooooo
                          ... ....ooooooo@ooooo..oo
                           ..  ....oooooo@oooo...oo
 ```
-Now this is cool, but there's another problem! 
-The resulting ASCII image 
-seems to be horizontally "squeezed" compared to the input image...
+Cool! But there's another problem...
+
+The resulting ASCII art seems to be horizontally "squeezed" compared to the input image...But why? 
+
+Well, the problem is that we can think of pixels as squares (see above), 
+but that definitely isn't true for characters! 
+Characters, in fact, tend to be taller then they are wide; to "make a square"
+you usually need at least 2 characters, or maybe 3 (much depends on the screen type, and the font itself I guess).
 
 ### Correcting the aspect ratio
 
-It turns out that mapping a (grey scale) image to ASCII pixel-by-pixel will usually lead to a distorted image, since
-the aspect ratio of the characters is not the same as the pixels (i.e. we can think of pixels as being
-perfect squares while characters are usually taller than they are wide). 
-
-There are a few ways to fix this issue. 
+So, once understood, there are a few ways to fix this issue. 
 
 #### Repeating charcaters
 
@@ -357,9 +353,34 @@ ooo.                o@@.      .      ....  .oooooo
                         ........ooooooo@oooooooooo
                          ... .....oooooo@ooooo..oo
 ```
+
+Notice that there are default values for this parameters, so running something like
+
+```
+cargo run -- -i imgs/mario.jpg
+```
+
+is usually enough.
+
+
 ## Details
 
 ### The mapping function 
+
+How do we actually map the pixels to ASCII characters? 
+
+A conventional approach would  be to iterate through each individual pixel using 
+nested for loops (one for rows and onw for columns). 
+
+However for this exercise I wanted to write this in a more functional way, using the 
+functional programming facilities of Rust (closures, iteratores etc.).
+
+This is what the mapping function looks like. 
+
+We essentially trasform each row in the image into an ASCII string (with an appended newline), finally concatenate all those strings together to give our final string. 
+
+The way we map each image row into a string is by simply mapping the 
+`lumi_8_to_char` (shown above) to each pixel. 
 
 ```rust
 /// Convert a grey-scale image to ASCII art by mapping each pixel (consisting of
