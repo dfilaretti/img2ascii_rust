@@ -1,6 +1,6 @@
 [package]
 name = "img2ascii"
-version = "1.0.0"
+version = "0.1.0"
 edition = "2021"
 readme = "README.md"
 description = "A simple command-line program to create ASCII art from a given image file"
