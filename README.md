@@ -1,5 +1,8 @@
 # img2ascii
 
+<img src="imgs/logo.png" width="700">
+
+
 Convert images into ASCII art.
 
 User can provide additional options to specify the desired width in characters,
