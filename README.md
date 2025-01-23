@@ -144,29 +144,29 @@ fn lumi_8_to_char(lumi: u8) -> char {
 (it's super simple but in fact already provides acceptable results)
 
 But we're not done yet, as there'a little problem: 
-our image has a size of 1070  ×  1508 pixels, meaning 
+our example image has a size of 1070  ×  1508 pixels, meaning 
 that our ASCII art will be 1070 characters wide and 1508 
-characters tall - definutely too big to fit on the screen!! 
+characters tall - definutely too big to fit on the screen! 
 
 ### Scaling the input image
 
 To have something that fits nicely on the screen we 
-want our output to be much smaller; something around 100 characters wide can is a good starting point (the exact number depends on the size of the screen, but this gives an idea).
+want our output to be much smaller; something around 100 characters wide is a good starting point (the exact number depends on the size of the screen, but this gives an idea).
 
 One way to achieve that is to simply resize the grey-scale image prior
-to apply the pixel-to-ASCII mapping. 
+to applying the pixel-to-ASCII mapping. 
 
-In our example, we could for example resize our image so that it is 80 pixels wide, so that when mapping pixels to ASCII characters, 
-the result will be 80 charactwers wide, as wanted. 
+In our example, we could for example resize our image so that it is 100 pixels wide, so that when mapping pixels to ASCII characters, 
+the result will be 100 charactwers wide, as wanted:
 
 <img src="imgs/mario-greyscale.jpg" width="50">
 
-The proportions are not quite right on this page, but you get the idea; if we zoom in on this tiny image, we can now see each individual pixel:
+The proportions are not quite right on this page, but you get the idea; if we zoom in on this tiny image, we can now see each individual pixel;
 
 <img src="imgs/mario-pixels.png" width="300">
 
-and we can now imagine filling each "square" with an ASCII
-character, giving us a final result of the correct size this time. 
+now, imagine filling each "square" with an ASCII
+character; this should give us something like:
 
 ```
 @@@@@@o@@@@@@@@o@@@@@@@@@@@@@@o@@@@@@@@o@ooo@@@@o@
@@ -240,22 +240,22 @@ ooo.                o@@.      .      .... ..oooooo
                          ... ....ooooooo@ooooo..oo
                           ..  ....oooooo@oooo...oo
 ```
-Cool! But there's another problem...
+Cool, but unfortunately there's another problem.
 
 The resulting ASCII art seems to be horizontally "squeezed" compared to the input image...But why? 
 
 Well, the problem is that we can think of pixels as squares (see above), 
-but that definitely isn't true for characters! 
+but that definitely doesn't apply to characters! 
 Characters, in fact, tend to be taller then they are wide; to "make a square"
-you usually need at least 2 characters, or maybe 3 (much depends on the screen type, and the font itself I guess).
+you usually need at least 2 characters, or maybe 3 (very much depends on the screen type, and the font itself I guess, but that's the idea).
 
 ### Correcting the aspect ratio
 
-So, once understood, there are a few ways to fix this issue. 
+So, once identified the issue, there are a few things we can do to fix it. Let's look at two options.  
 
 #### Repeating charcaters
 
-A simple method is to  simply repeat each character 'n' times (horizontally) when generating
+A simple solution is to  simply repeat each character 'n' times (horizontally) when generating
 the ASCII art (with n usually 2 or 3).
 
 We can do this by running 
@@ -310,8 +310,8 @@ oo..                @@oo              ..  ..oooooo
 ```
 #### Stretching the input image prior to mapping
 
-A second method we could use instead is to continue 
-mapping pixels to characters 1:1 (i.e. each pixel is represented by a single character) but in order to
+A second solution could be to continue 
+mapping one pixel to one character (without repetition) but in order to
 fix the aspect ratio we stretch the input image horizontally by a factor of 2 or 3 to compensate for the
 horizontal squeezing effect. 
 
@@ -357,13 +357,14 @@ ooo.                o@@.      .      ....  .oooooo
                          ... .....oooooo@ooooo..oo
 ```
 
-Notice that there are default values for this parameters, so running something like
+Notice that in our implementation there are default values for this parameters, so running something like
 
 ```
 cargo run -- -i imgs/mario.jpg
 ```
 
-is usually enough.
+is usually good enough. 
+Please use the `-h` option to see what's available.
 
 
 ## Details
@@ -399,3 +400,56 @@ fn img_to_ascii(img: &image::GrayImage, config: &Config) -> String {
         .collect::<String>()
 }
 ```
+## Notes 
+
+### Improving the results
+
+The example output shown in this `README` (repeated here for convenience), isn't too great...
+
+```
+@@@@@@o@@@@@@@@o@@@@@@@@@@@@@@o@@@o@@@@@oooo@@@@o@
+@@oo@ooo@oooo@o.@@@@@@@@@@@@@oo@@o@@@@@ooooo@@ooo@
+@@oo@ooooooo@o.o@@@@@@@@@@@@@@o.  o@o@oooo@@@oo@o@
+@@oo@oooooo@oo.@@@@@@@@@@@@@@o     oo@o@ooo@@o@@oo
+@@@@ooo@@@@oo.o@@@@@@@o@@o@@o  ... .@@@oooo@oo@@oo
+@@@@oo..ooooooo@@@o@@@o@@@@o   ... .@@ooooooo@oooo
+@@@@@@.    ..o@@@@o@o.oo...     .  .@oo@ooooooo@@o
+@@@@@@o...   ......       ..       .@ooo.ooooo@ooo
+@@@@ooo. ...        .o.             ooo.oooooooooo
+@@@o.     .    .    .oo             .oo.o...oooooo
+ooo.                o@@.      .      ....  .oooooo
+ ..                 o@@o.                  .oooooo
+          .   .. .. @@@@@o....             .oooooo
+         ..       .o@@@@@oo@@@o.           .oooooo
+         ..      .@@oooo...ooooo.          ..ooooo
+        ...     .o@@o... .ooooooo....       ..oooo
+         oo     o@@@oo. ......o......        ...oo
+        .@@o  ....oo.... ...........          ..oo
+        o@@@@o......................           ..o
+        o@@@@@@oooo.................          ...o
+        o@@@@@@@oooo.................         ...o
+      .o@@@@@@@ooooooooo.............         ...o
+     .o@@@@@@@oooooooooooo...........         ...o
+      .o@@@@@@oooooooooooooo........           ...
+       .o@@@@@@ooooooooooooooooo...           ....
+        .o@@@@@@oooooooooooooooo..          ......
+         o@@@@@@@o..o.ooooooo..              .....
+        o@@@@@@@@o. ..........                ....
+        @@o@@@@o@oo.   ......           ... . ....
+         o@@@@@@oooo  ...o..   .... ..............
+          o@@@o@oooo ....oo...ooooooooooooo.......
+           ...oo...  ........oooooooooooooo.oo...o
+                      .........ooooooooooooo.oo.oo
+                        ........ooooooo@oooooooooo
+                         ... .....oooooo@ooooo..oo
+```
+
+This is because for our examples we used a small output width of 100 or 80 characters; as explained above, this effectively means that the 
+input image has been preprocessed (shrinked) to a width of 100 pixels (imagine zooming in on a picture of that size, and you get the idea).
+
+If we want something better, what we could do it simply to request a larger output, which effectively means increasing the resolution (and therefore detail) of the image; it might not directly fit on the screen as-is, but it could always be saved on a file where we could pick a 
+different font size. 
+
+Here's an example: 
+
+<img src="imgs/mario-window-ascii.png" width="800">
