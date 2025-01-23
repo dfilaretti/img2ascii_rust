@@ -1,6 +1,6 @@
 # img2ascii
 
-<img src="imgs/logo.png" width="600" align="center">
+<img src="imgs/logo.png" width="500" align="center">
 
 
 Convert images into ASCII art.
